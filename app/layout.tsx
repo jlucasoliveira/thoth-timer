@@ -1,11 +1,10 @@
-import DeployButton from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import HeaderAuth from "@/components/header-auth";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+import Link from "next/link";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
-import Link from "next/link";
+import { Menu } from "@/components/menu";
+import HeaderAuth from "@/components/header-auth";
+import { Toaster } from "@/components/ui/toaster";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -14,8 +13,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Thoth Timer",
+  description: "A simple and small time tracker",
 };
 
 export default function RootLayout({
@@ -24,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
+    <html lang="pt-br" className={GeistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
         <ThemeProvider
           attribute="class"
@@ -32,39 +31,31 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col gap-20 items-center">
+          <main className="min-h-screen flex flex-col">
+            <div className="flex-1 w-full flex flex-col gap-10">
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Next.js Supabase Starter</Link>
-                    <div className="flex items-center gap-2">
-                      <DeployButton />
-                    </div>
+                    <Link href={"/"}>Thoth Timer</Link>
                   </div>
-                  {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
+                  <Menu />
+                  <div className="flex flex-row gap-3">
+                    <HeaderAuth />
+                    <ThemeSwitcher />
+                  </div>
                 </div>
               </nav>
-              <div className="flex flex-col gap-20 max-w-5xl p-5">
-                {children}
-              </div>
+              <div className="flex flex-1 flex-col gap-20 p-5">{children}</div>
 
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">
                 <p>
                   Powered by{" "}
-                  <a
-                    href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-                    target="_blank"
-                    className="font-bold hover:underline"
-                    rel="noreferrer"
-                  >
-                    Supabase
-                  </a>
+                  <span className="font-bold hover:underline">Thoth</span>
                 </p>
-                <ThemeSwitcher />
               </footer>
             </div>
           </main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
