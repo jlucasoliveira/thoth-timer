@@ -33,6 +33,7 @@ type ComboboxProps<T extends FieldValues, F> = {
   options: F[];
   name: Path<T>;
   label: string;
+  isMulti?: boolean;
   control: Control<T, any>;
   placeholder?: string;
   description?: string;
@@ -47,6 +48,7 @@ export function Combobox<T extends FieldValues, F>({
   label,
   control,
   options,
+  isMulti,
   required,
   setSearch,
   description,
@@ -57,6 +59,15 @@ export function Combobox<T extends FieldValues, F>({
   const [open, setOpen] = React.useState<boolean>(false);
 
   const setDebouncedSearch = useDebounce(setSearch ?? (() => {}), 300);
+
+  function isSelect(value: F | Array<F>, option: F): boolean {
+    if (Array.isArray(value))
+      return value.some(
+        (item) => getOptionValue(item) === getOptionValue(option),
+      );
+
+    return getOptionValue(value) === getOptionValue(option);
+  }
 
   return (
     <FormField
@@ -79,7 +90,9 @@ export function Combobox<T extends FieldValues, F>({
                     !value && "text-muted-foreground",
                   )}
                 >
-                  {getOptionLabel(value) || placeholder}
+                  {(Array.isArray(value)
+                    ? (value as Array<F>).map((v) => getOptionLabel(v))
+                    : getOptionLabel(value)) || placeholder}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </FormControl>
@@ -93,27 +106,53 @@ export function Combobox<T extends FieldValues, F>({
                 <CommandList>
                   <CommandEmpty>Nenhuma opção encontrada.</CommandEmpty>
                   <CommandGroup>
-                    {options.map((option) => (
-                      <CommandItem
-                        key={getOptionValue(option)}
-                        value={getOptionValue(option)}
-                        onSelect={() => {
-                          onChange(option);
-                          setOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            getOptionValue(option) === getOptionValue(value)
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {getOptionLabel(option)}
-                      </CommandItem>
-                    ))}
+                    {options.map((option) =>
+                      isMulti && isSelect(value, option) ? null : (
+                        <CommandItem
+                          key={getOptionValue(option)}
+                          value={getOptionValue(option)}
+                          onSelect={() => {
+                            onChange(
+                              isMulti ? [...(value ?? []), option] : option,
+                            );
+                            if (!isMulti) setOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              isSelect(value, option)
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                          {getOptionLabel(option)}
+                        </CommandItem>
+                      ),
+                    )}
                   </CommandGroup>
+                  {isMulti ? (
+                    <CommandGroup heading="Selecionados">
+                      {((value ?? []) as Array<F>).map((item, _, arr) => (
+                        <CommandItem
+                          key={getOptionValue(item)}
+                          value={getOptionValue(item)}
+                          onSelect={() => {
+                            onChange(
+                              arr.filter(
+                                (option) =>
+                                  getOptionValue(option) !==
+                                  getOptionValue(item),
+                              ),
+                            );
+                          }}
+                        >
+                          <Check className={cn("mr-2 h-4 w-4 opacity-100")} />
+                          {getOptionLabel(item)}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  ) : null}
                 </CommandList>
               </Command>
             </PopoverContent>
