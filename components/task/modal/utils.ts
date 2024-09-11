@@ -1,7 +1,7 @@
 import { User } from "@supabase/supabase-js";
-import { TablesUpdate } from "@/database.types";
-import { FormType } from "./validation";
+import { Tables, TablesUpdate } from "@/database.types";
 import { mergeDateHour } from "../utils";
+import { FormType } from "./validation";
 
 export function parseFormDataIntoPayload(
   data: FormType,
@@ -23,4 +23,17 @@ export function parseFormDataIntoPayload(
         ? mergeDateHour(data.endAt, data.endAtTime).toJSON()
         : undefined,
   };
+}
+
+export function extractTagsDiffs(
+  currentTags: Array<Pick<Tables<"tags">, "id" | "name">>,
+  newTags: FormType["tags"],
+): [Array<number>, Array<number>] {
+  const newTagsSet = new Set<number>(newTags.map((tag) => tag.id));
+  const tagsSet = new Set<number>(currentTags.map((tag) => tag.id));
+
+  const newestTags = newTags.filter((tag) => !tagsSet.has(tag.id));
+  const deletedTags = currentTags.filter((tag) => !newTagsSet.has(tag.id));
+
+  return [deletedTags.map((tag) => tag.id), newestTags.map((tag) => tag.id)];
 }

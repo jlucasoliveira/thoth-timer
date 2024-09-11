@@ -8,6 +8,7 @@ export const schema = z.object({
   description: z.string().optional(),
   project: z.custom<Tables<"projects">>().optional().nullable(),
   status: z.custom<TaskStatus>().default(TaskStatus.Start),
+  tags: z.array(z.custom<Tables<"tags">>()).default([]),
   startAt: z.coerce.date().optional().nullable(),
   startAtTime: z.string().optional().nullable(),
   endAt: z.coerce.date().optional().nullable(),

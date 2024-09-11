@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Tables, TablesInsert } from "@/database.types";
+import { Tables, TablesInsert, TablesUpdate } from "@/database.types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/input";
 import { Select } from "@/components/select";
@@ -26,7 +26,7 @@ import { RequirementIndicator } from "@/components/requirement-indicator";
 import { extractNaiveTime, generateStatusOptions } from "../utils";
 import { Task, TaskStatus } from "../types";
 import { FormType, schema } from "./validation";
-import { parseFormDataIntoPayload } from "./utils";
+import { extractTagsDiffs, parseFormDataIntoPayload } from "./utils";
 import { extractChangedValues } from "@/lib/utils";
 
 const statusOptions = generateStatusOptions();
@@ -41,15 +41,63 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
   const router = useRouter();
   const { toast } = useToast();
   const client = createClient();
-  const [search, setSearch] = useState<string>();
   const subtitle = task?.id ? "Editar" : "Adicionar";
   const [isLoading, setLoading] = useState<boolean>(false);
-  const form = useForm<FormType>({ resolver: zodResolver(schema) });
+  const [projectSearch, setProjectSearch] = useState<string>();
+  const [tagSearch, setTagSearch] = useState<string>();
+  const [tags, setTags] = useState<Tables<"tags">[]>([]);
   const [projects, setProjects] = useState<Tables<"projects">[]>([]);
+
+  const form = useForm<FormType>({ resolver: zodResolver(schema) });
 
   const endAt = form.watch("endAt");
   const startAt = form.watch("startAt");
   const startAtTime = form.watch("startAtTime");
+
+  async function handleUpdate(
+    payload: TablesUpdate<"tasks">,
+    tags: Tables<"tags">[] | null,
+  ) {
+    if (!task) throw new Error(`Object is undefined`);
+
+    const changes = extractChangedValues(task, payload);
+    await client.from("tasks").update(changes).eq("id", task.id);
+
+    if (tags) {
+      const [deleted, newest] = extractTagsDiffs(task.tags, tags);
+
+      if (deleted.length > 0) {
+        await client
+          .from("tags_tasks")
+          .delete()
+          .eq("task_id", task.id)
+          .in("tag_id", deleted);
+      }
+      if (newest.length > 0) {
+        await client
+          .from("tags_tasks")
+          .insert(newest.map((tag_id) => ({ tag_id, task_id: task.id })));
+      }
+    } else if (task.tags.length > 0) {
+      await client.from("tags_tasks").delete().eq("task_id", task.id);
+    }
+  }
+
+  async function handleCreate(
+    payload: TablesUpdate<"tasks">,
+    tags: Tables<"tags">[] | null,
+  ) {
+    const { data: task } = await client
+      .from("tasks")
+      .insert(payload as TablesInsert<"tasks">)
+      .returns<Tables<"tasks">>();
+
+    if (task && tags && (tags.length ?? 0) > 0) {
+      await client
+        .from("tags_tasks")
+        .insert(tags.map(({ id }) => ({ tag_id: id, task_id: task.id })));
+    }
+  }
 
   async function onSubmit(data: FormType) {
     try {
@@ -57,12 +105,11 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
       const {
         data: { user },
       } = await client.auth.getUser();
+
       const payload = parseFormDataIntoPayload(data, user!);
-      if (task?.id) {
-        const changes = extractChangedValues(task, payload);
-        await client.from("tasks").update(changes).eq("id", task.id);
-      } else
-        await client.from("tasks").insert(payload as TablesInsert<"tasks">);
+
+      if (task?.id) await handleUpdate(payload, data.tags);
+      else await handleCreate(payload, data.tags);
 
       form.reset();
       setOpen(false);
@@ -88,9 +135,28 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
     }
   }
 
+  async function loadTags(name?: string) {
+    try {
+      const query = client.from("tags").select();
+      if (name) query.ilike("name", `%${name}%`);
+
+      const { data } = await query;
+      if (data) setTags(data);
+    } catch (error) {
+      toast({
+        content: "Não foi possível buscar suas tags",
+        variant: "destructive",
+      });
+    }
+  }
+
   useEffect(() => {
-    loadProjects(search);
-  }, [search]);
+    loadProjects(projectSearch);
+  }, [projectSearch]);
+
+  useEffect(() => {
+    loadTags(tagSearch);
+  }, [tagSearch]);
 
   useEffect(() => {
     if (task) {
@@ -135,7 +201,7 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
               label="Projeto"
               placeholder="Selecione um projeto"
               options={projects}
-              setSearch={setSearch}
+              setSearch={setProjectSearch}
               getOptionLabel={(project) =>
                 project ? (project.name ?? `Projeto ${project.id}`) : ""
               }
@@ -147,6 +213,19 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
               control={form.control}
               options={statusOptions}
               placeholder="Selecione um status"
+            />
+            <Combobox
+              isMulti
+              control={form.control}
+              name="tags"
+              label="Tags"
+              placeholder="Selecione pelo menos uma tag"
+              options={tags}
+              setSearch={setTagSearch}
+              getOptionLabel={(tag) =>
+                tag ? (tag.name ?? `Tag ${tag.id}`) : ""
+              }
+              getOptionValue={(tag) => tag?.id?.toString?.() ?? ""}
             />
             <span className="text-sm font-medium">
               Iniciado em <RequirementIndicator />
