@@ -21,6 +21,9 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "@tanstack/react-query": "^5.56.1",
+    "@tanstack/react-query-devtools": "^5.56.1",
+    "@tanstack/react-query-next-experimental": "^5.56.1",
     "@tanstack/react-table": "^8.20.5",
     "autoprefixer": "10.4.17",
     "class-variance-authority": "^0.7.0",
@@ -37,7 +40,8 @@
     "react-day-picker": "8.10.1",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.53.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zod-error": "^1.5.0"
   },
   "devDependencies": {
     "@types/node": "20.10.6",
