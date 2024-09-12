@@ -14,13 +14,14 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tables, TablesInsert } from "@/database.types";
+import { extractChangedValues } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/input";
-import { createClient } from "@/utils/supabase/client";
 import { Combobox } from "@/components/combobox";
+import { useCompanies } from "@/components/company/hooks/useCampanies";
+import { createClient } from "@/utils/supabase/client";
 import { FormType, schema } from "./validation";
 import { parseFormDataIntoPayload } from "./utils";
-import { extractChangedValues } from "@/lib/utils";
 
 export type Project = Pick<Tables<"projects">, "id" | "name"> & {
   companies: Pick<Tables<"companies">, "id" | "name"> | null;
@@ -44,7 +45,11 @@ export function ProjectFormModal({
   const subtitle = project?.id ? "Editar" : "Adicionar";
   const [isLoading, setLoading] = useState<boolean>(false);
   const form = useForm<FormType>({ resolver: zodResolver(schema) });
-  const [companies, setCompanies] = useState<Tables<"companies">[]>([]);
+  const { data: companies = [], isPending } = useCompanies({
+    client,
+    name: search,
+    enabled: isOpen,
+  });
 
   async function onSubmit(data: FormType) {
     try {
@@ -60,8 +65,8 @@ export function ProjectFormModal({
         await client
           .from("projects")
           .insert(payload as TablesInsert<"projects">);
-        form.reset();
       }
+      form.reset();
       setOpen(false);
       router.refresh();
     } catch (error) {
@@ -69,25 +74,6 @@ export function ProjectFormModal({
     }
     setLoading(false);
   }
-
-  async function loadCompanies(name?: string) {
-    try {
-      const query = client.from("companies").select();
-      if (name) query.ilike("name", `%${name}%`);
-
-      const { data } = await query;
-      if (data) setCompanies(data);
-    } catch (error) {
-      toast({
-        content: "Não foi possível buscar as empresas",
-        variant: "destructive",
-      });
-    }
-  }
-
-  useEffect(() => {
-    loadCompanies(search);
-  }, [search]);
 
   useEffect(() => {
     if (project) {
@@ -110,6 +96,7 @@ export function ProjectFormModal({
               name="company"
               label="Empresa"
               options={companies}
+              isLoading={isPending}
               setSearch={setSearch}
               control={form.control}
               placeholder="Selecione uma empresa"

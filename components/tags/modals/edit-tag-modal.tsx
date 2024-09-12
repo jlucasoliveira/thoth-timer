@@ -14,8 +14,12 @@ export function EditTagModal({ tag }: EditTagModalProps) {
 
   return (
     <>
-      <Edit size={18} className="cursor-pointer" onClick={() => setOpen(true)} />
-      <TagFormModal isOpen={isOpen} setOpen={setOpen} tag={tag} />
+      <Edit
+        size={18}
+        className="cursor-pointer"
+        onClick={() => setOpen(true)}
+      />
+      <TagFormModal key={tag.id} isOpen={isOpen} setOpen={setOpen} tag={tag} />
     </>
   );
 }

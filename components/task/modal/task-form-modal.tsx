@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { extractChangedValues } from "@/lib/utils";
 import { Tables, TablesInsert, TablesUpdate } from "@/database.types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/input";
@@ -22,12 +23,13 @@ import { Textarea } from "@/components/textarea";
 import { Combobox } from "@/components/combobox";
 import { DatePicker } from "@/components/date-picker";
 import { createClient } from "@/utils/supabase/client";
+import { useTags } from "@/components/tags/hooks/useTags";
+import { useProjects } from "@/components/project/hooks/useProjects";
 import { RequirementIndicator } from "@/components/requirement-indicator";
 import { extractNaiveTime, generateStatusOptions } from "../utils";
 import { Task, TaskStatus } from "../types";
-import { FormType, schema } from "./validation";
 import { extractTagsDiffs, parseFormDataIntoPayload } from "./utils";
-import { extractChangedValues } from "@/lib/utils";
+import { FormType, schema } from "./validation";
 
 const statusOptions = generateStatusOptions();
 
@@ -45,8 +47,18 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [projectSearch, setProjectSearch] = useState<string>();
   const [tagSearch, setTagSearch] = useState<string>();
-  const [tags, setTags] = useState<Tables<"tags">[]>([]);
-  const [projects, setProjects] = useState<Tables<"projects">[]>([]);
+
+  const { data: projects = [], isPending: isProjectPending } = useProjects({
+    client,
+    name: projectSearch,
+    enabled: isOpen,
+  });
+
+  const { data: tags = [], isPending: isTagPending } = useTags({
+    client,
+    name: tagSearch,
+    enabled: isOpen,
+  });
 
   const form = useForm<FormType>({ resolver: zodResolver(schema) });
 
@@ -121,67 +133,31 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
     setLoading(false);
   }
 
-  async function loadProjects(name?: string) {
-    try {
-      const query = client.from("projects").select();
-      if (name) query.ilike("name", `%${name}%`);
+  function setupFormData(task: Task) {
+    form.setValue("slug", task.slug ?? "");
+    form.setValue("name", task.name ?? "");
+    form.setValue("description", task.description ?? "");
+    form.setValue("project", task.project as Tables<"projects">);
+    form.setValue("status", (task.status as TaskStatus) ?? TaskStatus.Start);
 
-      const { data } = await query;
-      if (data) setProjects(data);
-    } catch (error) {
-      toast({
-        content: "Não foi possível buscar seus projetos",
-        variant: "destructive",
-      });
+    if (task.start_at) {
+      const time = extractNaiveTime(task.start_at);
+      form.setValue("startAt", new Date(task.start_at));
+      form.setValue("startAtTime", time);
     }
-  }
 
-  async function loadTags(name?: string) {
-    try {
-      const query = client.from("tags").select();
-      if (name) query.ilike("name", `%${name}%`);
-
-      const { data } = await query;
-      if (data) setTags(data);
-    } catch (error) {
-      toast({
-        content: "Não foi possível buscar suas tags",
-        variant: "destructive",
-      });
+    if (task.end_at) {
+      const time = extractNaiveTime(task.end_at);
+      form.setValue("endAt", new Date(task.end_at));
+      form.setValue("endAtTime", time);
     }
+
+    if (task.tags) form.setValue("tags", task.tags as Tables<"tags">[]);
   }
 
   useEffect(() => {
-    loadProjects(projectSearch);
-  }, [projectSearch]);
-
-  useEffect(() => {
-    loadTags(tagSearch);
-  }, [tagSearch]);
-
-  useEffect(() => {
-    if (task) {
-      form.setValue("slug", task.slug ?? "");
-      form.setValue("name", task.name ?? "");
-      form.setValue("description", task.description ?? "");
-      form.setValue("project", task.project as Tables<"projects">);
-      form.setValue("status", (task.status as TaskStatus) ?? TaskStatus.Start);
-
-      if (task.start_at) {
-        const time = extractNaiveTime(task.start_at);
-        form.setValue("startAt", new Date(task.start_at));
-        form.setValue("startAtTime", time);
-      }
-
-      if (task.end_at) {
-        const time = extractNaiveTime(task.end_at);
-        form.setValue("endAt", new Date(task.end_at));
-        form.setValue("endAtTime", time);
-      }
-
-      if (task.tags) form.setValue("tags", task.tags as Tables<"tags">[]);
-    }
-  }, [task, form.setValue]);
+    if (task) setupFormData(task);
+  }, [task]);
 
   return (
     <Dialog modal open={isOpen || isLoading} onOpenChange={setOpen}>
@@ -199,12 +175,13 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
               label="Descrição"
             />
             <Combobox
-              control={form.control}
               name="project"
               label="Projeto"
-              placeholder="Selecione um projeto"
               options={projects}
+              control={form.control}
+              isLoading={isProjectPending}
               setSearch={setProjectSearch}
+              placeholder="Selecione um projeto"
               getOptionLabel={(project) =>
                 project ? (project.name ?? `Projeto ${project.id}`) : ""
               }
@@ -220,12 +197,13 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
               />
               <Combobox
                 isMulti
-                control={form.control}
                 name="tags"
                 label="Tags"
-                placeholder="Selecione pelo menos uma tag"
                 options={tags}
+                control={form.control}
+                isLoading={isTagPending}
                 setSearch={setTagSearch}
+                placeholder="Selecione pelo menos uma tag"
                 getOptionLabel={(tag) =>
                   tag ? (tag.name ?? `Tag ${tag.id}`) : ""
                 }
