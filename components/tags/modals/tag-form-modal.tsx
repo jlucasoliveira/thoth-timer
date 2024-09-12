@@ -73,9 +73,15 @@ export function TagFormModal({ isOpen, setOpen, tag }: TagFormModalProps) {
           <Input control={form.control} name="name" label="Nome" required />
         </FormProvider>
         <DialogFooter>
-          <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading}>
-            Salvar{" "}
-            {isLoading ? <LoaderCircle className="animate-spin" /> : null}
+          <Button
+            className="flex flex-row gap-2"
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={isLoading}
+          >
+            Salvar
+            {isLoading ? (
+              <LoaderCircle className="animate-spin" size={18} />
+            ) : null}
           </Button>
           <Button
             variant="ghost"
