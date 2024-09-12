@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, UseFormReturn, useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -13,23 +13,65 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { extractChangedValues } from "@/lib/utils";
-import { Tables, TablesInsert, TablesUpdate } from "@/database.types";
-import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/input";
 import { Select } from "@/components/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/textarea";
 import { Combobox } from "@/components/combobox";
 import { DatePicker } from "@/components/date-picker";
-import { createClient } from "@/utils/supabase/client";
+import { RequirementIndicator } from "@/components/requirement-indicator";
 import { useTags } from "@/components/tags/hooks/useTags";
 import { useProjects } from "@/components/project/hooks/useProjects";
-import { RequirementIndicator } from "@/components/requirement-indicator";
+import { useToast } from "@/hooks/use-toast";
+import { extractChangedValues } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
+import { Tables, TablesInsert, TablesUpdate } from "@/database.types";
 import { extractNaiveTime, generateStatusOptions } from "../utils";
 import { Task, TaskStatus } from "../types";
 import { extractTagsDiffs, parseFormDataIntoPayload } from "./utils";
-import { FormType, schema } from "./validation";
+import { FormType, schema, defaultValues } from "./validation";
+
+type EndAtInputProps = {
+  form: UseFormReturn<FormType>;
+};
+
+function EndAtInput({ form }: EndAtInputProps) {
+  const endAt = form.watch("endAt");
+  const startAt = form.watch("startAt");
+  const startAtTime = form.watch("startAtTime");
+
+  return (
+    <div>
+      <span className="text-sm font-medium mt-2">
+        Finalizado em <RequirementIndicator />
+      </span>
+      <div className="flex flex-row gap-2 mt-2">
+        <DatePicker
+          control={form.control}
+          name="endAt"
+          label="Data"
+          calendarProps={{
+            disabled: (date) => (startAt ? date < startAt : false),
+          }}
+          asChild
+        />
+        <Input
+          control={form.control}
+          name="endAtTime"
+          label="Hora"
+          type="time"
+          className="min-w-20"
+          min={
+            startAt && startAtTime && endAt && isSameDay(startAt, endAt)
+              ? startAtTime
+              : undefined
+          }
+          asChild
+        />
+      </div>
+    </div>
+  );
+}
 
 const statusOptions = generateStatusOptions();
 
@@ -60,11 +102,10 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
     enabled: isOpen,
   });
 
-  const form = useForm<FormType>({ resolver: zodResolver(schema) });
-
-  const endAt = form.watch("endAt");
-  const startAt = form.watch("startAt");
-  const startAtTime = form.watch("startAtTime");
+  const form = useForm<FormType>({
+    resolver: zodResolver(schema),
+    defaultValues,
+  });
 
   async function handleUpdate(
     payload: TablesUpdate<"tasks">,
@@ -231,35 +272,7 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
                 />
               </div>
             </div>
-            <div>
-              <span className="text-sm font-medium mt-2">
-                Finalizado em <RequirementIndicator />
-              </span>
-              <div className="flex flex-row gap-2 mt-2">
-                <DatePicker
-                  control={form.control}
-                  name="endAt"
-                  label="Data"
-                  calendarProps={{
-                    disabled: (date) => (startAt ? date < startAt : false),
-                  }}
-                  asChild
-                />
-                <Input
-                  control={form.control}
-                  name="endAtTime"
-                  label="Hora"
-                  type="time"
-                  className="min-w-20"
-                  min={
-                    startAt && startAtTime && endAt && isSameDay(startAt, endAt)
-                      ? startAtTime
-                      : undefined
-                  }
-                  asChild
-                />
-              </div>
-            </div>
+            <EndAtInput form={form} />
           </div>
         </FormProvider>
         <DialogFooter>
