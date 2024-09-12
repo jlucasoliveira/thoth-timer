@@ -19,7 +19,8 @@ export default async function Tasks() {
     end_at,
     created_at,
     spend_time: task_logs (start_at, end_at),
-    project: projects (id, name)
+    project: projects (id, name),
+    tags (id, name)
   `,
     )
     .limit(10);
