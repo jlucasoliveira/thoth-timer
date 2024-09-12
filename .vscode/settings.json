@@ -1,7 +1,4 @@
 {
-    "cSpell.words": [
-        "hookform",
-        "ilike",
-        "supabase"
-    ]
+  "editor.formatOnSave": true,
+  "cSpell.words": ["hookform", "ilike", "supabase"]
 }
