@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { CommandLoading } from "cmdk";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Control, FieldValues, Path } from "react-hook-form";
 import { cn } from "@/lib/utils";
@@ -26,14 +27,15 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { RequirementIndicator } from "./requirement-indicator";
 import { useDebounce } from "@/hooks/use-debounce";
+import { RequirementIndicator } from "./requirement-indicator";
 
 type ComboboxProps<T extends FieldValues, F> = {
   options: F[];
   name: Path<T>;
   label: string;
   isMulti?: boolean;
+  isLoading?: boolean;
   control: Control<T, any>;
   placeholder?: string;
   description?: string;
@@ -50,6 +52,7 @@ export function Combobox<T extends FieldValues, F>({
   options,
   isMulti,
   required,
+  isLoading,
   setSearch,
   description,
   placeholder,
@@ -107,6 +110,7 @@ export function Combobox<T extends FieldValues, F>({
                 />
                 <CommandList>
                   <CommandEmpty>Nenhuma opção encontrada.</CommandEmpty>
+                  {isLoading ? <CommandLoading /> : null}
                   <CommandGroup>
                     {options.map((option) =>
                       isMulti && isSelect(value, option) ? null : (
