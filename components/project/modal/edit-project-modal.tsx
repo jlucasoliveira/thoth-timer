@@ -13,8 +13,17 @@ export function EditProjectModal({ project }: EditProjectModalProps) {
 
   return (
     <>
-      <Edit size={18} className="cursor-pointer" onClick={() => setOpen(true)} />
-      <ProjectFormModal isOpen={isOpen} setOpen={setOpen} project={project} />
+      <Edit
+        size={18}
+        className="cursor-pointer"
+        onClick={() => setOpen(true)}
+      />
+      <ProjectFormModal
+        key={project.id}
+        isOpen={isOpen}
+        setOpen={setOpen}
+        project={project}
+      />
     </>
   );
 }

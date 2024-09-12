@@ -14,8 +14,17 @@ export function EditCompanyModal({ company }: EditCompanyModalProps) {
 
   return (
     <>
-      <Edit size={18} className="cursor-pointer" onClick={() => setOpen(true)} />
-      <CompanyFormModal isOpen={isOpen} setOpen={setOpen} company={company} />
+      <Edit
+        size={18}
+        className="cursor-pointer"
+        onClick={() => setOpen(true)}
+      />
+      <CompanyFormModal
+        key={company.id}
+        isOpen={isOpen}
+        setOpen={setOpen}
+        company={company}
+      />
     </>
   );
 }

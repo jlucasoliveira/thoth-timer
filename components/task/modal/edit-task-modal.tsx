@@ -34,7 +34,12 @@ export function EditTaskModal({ task }: EditTaskModalProps) {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <TaskFormModal isOpen={isOpen} setOpen={setOpen} task={task} />
+      <TaskFormModal
+        key={task.id}
+        isOpen={isOpen}
+        setOpen={setOpen}
+        task={task}
+      />
     </>
   );
 }
