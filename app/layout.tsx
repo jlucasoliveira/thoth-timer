@@ -5,6 +5,7 @@ import { Menu } from "@/components/menu";
 import HeaderAuth from "@/components/header-auth";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Provider } from "@/providers/app-provider";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -45,7 +46,9 @@ export default function RootLayout({
                   </div>
                 </div>
               </nav>
-              <div className="flex flex-1 flex-col gap-20 p-5">{children}</div>
+              <div className="flex flex-1 flex-col gap-20 p-5">
+                <Provider>{children}</Provider>
+              </div>
 
               <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">
                 <p>
