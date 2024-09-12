@@ -1,4 +1,6 @@
 "use client";
+
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Pagination as UiPagination,
   PaginationContent,
@@ -8,11 +10,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 type Props = {
   page: number;
@@ -57,8 +54,8 @@ function createPagesNumber(page: number, pages: number) {
 }
 
 export function Pagination({ page, pages: numPages }: Props) {
-  const searchParams = useSearchParams();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const pages =
     numPages <= MAX_PAGES
       ? Array.from({ length: numPages }, (_, i) => (i + 1).toString())

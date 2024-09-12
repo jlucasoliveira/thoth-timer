@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import {
   type ColumnDef,
   flexRender,
@@ -30,6 +31,7 @@ type TableProps<T> = {
 };
 
 export function Table<T>(props: TableProps<T>) {
+  const searchParams = useSearchParams();
   const table = useReactTable({
     data: props.data,
     columns: props.columns,
@@ -92,7 +94,10 @@ export function Table<T>(props: TableProps<T>) {
           </TableBody>
         </TableUI>
       </div>
-      <Pagination page={1} pages={1} />
+      <Pagination
+        page={Number(searchParams.get("page")) || 1}
+        pages={props.pages}
+      />
     </>
   );
 }
