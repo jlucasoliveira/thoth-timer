@@ -90,7 +90,8 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
     const { data: task } = await client
       .from("tasks")
       .insert(payload as TablesInsert<"tasks">)
-      .returns<Tables<"tasks">>();
+      .select()
+      .single();
 
     if (task && tags && (tags.length ?? 0) > 0) {
       await client
@@ -177,6 +178,8 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
         form.setValue("endAt", new Date(task.end_at));
         form.setValue("endAtTime", time);
       }
+
+      if (task.tags) form.setValue("tags", task.tags as Tables<"tags">[]);
     }
   }, [task, form.setValue]);
 
@@ -207,82 +210,90 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
               }
               getOptionValue={(project) => project?.id?.toString?.() ?? ""}
             />
-            <Select
-              name="status"
-              label="Status"
-              control={form.control}
-              options={statusOptions}
-              placeholder="Selecione um status"
-            />
-            <Combobox
-              isMulti
-              control={form.control}
-              name="tags"
-              label="Tags"
-              placeholder="Selecione pelo menos uma tag"
-              options={tags}
-              setSearch={setTagSearch}
-              getOptionLabel={(tag) =>
-                tag ? (tag.name ?? `Tag ${tag.id}`) : ""
-              }
-              getOptionValue={(tag) => tag?.id?.toString?.() ?? ""}
-            />
-            <span className="text-sm font-medium">
-              Iniciado em <RequirementIndicator />
-            </span>
-            <div className="flex flex-row gap-3 mt-2">
-              <DatePicker
+            <div className="flex flex-row gap-2">
+              <Select
+                name="status"
+                label="Status"
                 control={form.control}
-                name="startAt"
-                label="Data"
-                asChild
+                options={statusOptions}
+                placeholder="Selecione um status"
               />
-              <Input
+              <Combobox
+                isMulti
                 control={form.control}
-                name="startAtTime"
-                label="Hora"
-                type="time"
-                className="min-w-20"
-                asChild
+                name="tags"
+                label="Tags"
+                placeholder="Selecione pelo menos uma tag"
+                options={tags}
+                setSearch={setTagSearch}
+                getOptionLabel={(tag) =>
+                  tag ? (tag.name ?? `Tag ${tag.id}`) : ""
+                }
+                getOptionValue={(tag) => tag?.id?.toString?.() ?? ""}
               />
             </div>
-            <span className="text-sm font-medium mt-2">
-              Finalizado em <RequirementIndicator />
-            </span>
-            <div className="flex flex-row gap-3 mt-2">
-              <DatePicker
-                control={form.control}
-                name="endAt"
-                label="Data"
-                calendarProps={{
-                  disabled: (date) => (startAt ? date < startAt : false),
-                }}
-                asChild
-              />
-              <Input
-                control={form.control}
-                name="endAtTime"
-                label="Hora"
-                type="time"
-                className="min-w-20"
-                min={
-                  startAt && startAtTime && endAt && isSameDay(startAt, endAt)
-                    ? startAtTime
-                    : undefined
-                }
-                asChild
-              />
+            <div>
+              <span className="text-sm font-medium">
+                Iniciado em <RequirementIndicator />
+              </span>
+              <div className="flex flex-row gap-2 mt-2">
+                <DatePicker
+                  control={form.control}
+                  name="startAt"
+                  label="Data"
+                  asChild
+                />
+                <Input
+                  control={form.control}
+                  name="startAtTime"
+                  label="Hora"
+                  type="time"
+                  className="min-w-20"
+                  asChild
+                />
+              </div>
+            </div>
+            <div>
+              <span className="text-sm font-medium mt-2">
+                Finalizado em <RequirementIndicator />
+              </span>
+              <div className="flex flex-row gap-2 mt-2">
+                <DatePicker
+                  control={form.control}
+                  name="endAt"
+                  label="Data"
+                  calendarProps={{
+                    disabled: (date) => (startAt ? date < startAt : false),
+                  }}
+                  asChild
+                />
+                <Input
+                  control={form.control}
+                  name="endAtTime"
+                  label="Hora"
+                  type="time"
+                  className="min-w-20"
+                  min={
+                    startAt && startAtTime && endAt && isSameDay(startAt, endAt)
+                      ? startAtTime
+                      : undefined
+                  }
+                  asChild
+                />
+              </div>
             </div>
           </div>
         </FormProvider>
         <DialogFooter>
           <Button
-            className="flex flex-row justify-between"
+            className="flex flex-row gap-2"
             onClick={form.handleSubmit(onSubmit)}
             disabled={isLoading}
           >
             Salvar
-            {isLoading ? <LoaderCircle className="animate-spin" /> : null}
+            {isLoading ? (
+              <LoaderCircle className="animate-spin" size={18} />
+            ) : null}
           </Button>
           <Button
             variant="ghost"
