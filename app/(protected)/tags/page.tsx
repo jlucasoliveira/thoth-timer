@@ -1,11 +1,20 @@
 import { createClient } from "@/utils/supabase/server";
+import { getPages, getPagination } from "@/lib/pagination";
 import { AddTagModal } from "@/components/tags/modals/add-tag-modal";
 import { Table } from "@/components/table";
 import { columns } from "./columns";
 
-export default async function Tasks() {
+type TagsProps = {
+  searchParams: Record<string, string | null>;
+};
+
+export default async function Tags({ searchParams }: TagsProps) {
   const client = createClient();
-  const { data: tags, count } = await client.from("tags").select().limit(10);
+  const ranges = getPagination(searchParams?.page);
+  const { data: tags, count } = await client
+    .from("tags")
+    .select("*", { count: "exact" })
+    .range(...ranges);
 
   if (!tags) return;
 
@@ -15,11 +24,7 @@ export default async function Tasks() {
         <h3 className="font-semibold">Tags</h3>
         <AddTagModal />
       </div>
-      <Table
-        columns={columns}
-        data={tags}
-        pages={Math.ceil((count ?? 0) / 10)}
-      />
+      <Table columns={columns} data={tags} pages={getPages(count)} />
     </div>
   );
 }
