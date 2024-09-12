@@ -74,7 +74,7 @@ export function Combobox<T extends FieldValues, F>({
       name={name}
       control={control}
       render={({ field: { value, onChange } }) => (
-        <FormItem className="flex flex-col gap-1">
+        <FormItem className="flex flex-1 flex-col">
           <FormLabel className="mt-2">
             {label} <RequirementIndicator required={required} />{" "}
           </FormLabel>
@@ -91,7 +91,9 @@ export function Combobox<T extends FieldValues, F>({
                   )}
                 >
                   {(Array.isArray(value)
-                    ? (value as Array<F>).map((v) => getOptionLabel(v))
+                    ? (value as Array<F>)
+                        .map((v) => getOptionLabel(v))
+                        .join(", ")
                     : getOptionLabel(value)) || placeholder}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -131,7 +133,7 @@ export function Combobox<T extends FieldValues, F>({
                       ),
                     )}
                   </CommandGroup>
-                  {isMulti ? (
+                  {isMulti && (value?.length ?? 0) > 0 ? (
                     <CommandGroup heading="Selecionados">
                       {((value ?? []) as Array<F>).map((item, _, arr) => (
                         <CommandItem

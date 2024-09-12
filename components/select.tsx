@@ -48,7 +48,7 @@ export function Select<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="flex-1">
           {asChild ? null : (
             <FormLabel>
               {label} <RequirementIndicator required={required} />
