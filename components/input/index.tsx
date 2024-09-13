@@ -1,5 +1,5 @@
 import { Control, FieldValues, Path } from "react-hook-form";
-import { Input as UInput, InputProps as UInputProps } from "./ui/input";
+import { Input as UInput, InputProps as UInputProps } from "../ui/input";
 import {
   FormControl,
   FormDescription,
@@ -7,8 +7,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { RequirementIndicator } from "./requirement-indicator";
+} from "../ui/form";
+import { RequirementIndicator } from "../requirement-indicator";
 
 type InputProps<T extends FieldValues> = UInputProps & {
   label: string;
