@@ -17,6 +17,7 @@ export function StartTask({ task }: StartTaskProps) {
   const client = createClient();
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const title = task?.status === TaskStatus.Todo ? "Iniciar" : "Continuar";
 
   async function onSubmit() {
     setLoading(true);
@@ -28,12 +29,16 @@ export function StartTask({ task }: StartTaskProps) {
           .eq("task_id", task.id)
           .order("start_at", { ascending: false })
           .limit(1);
+      } else if (task.status !== TaskStatus.Todo)
+        throw new Error(
+          "Uma tarefa iniciada, em andamento ou finalizada não pode ser iniciada/continuada",
+        );
 
-        await client
-          .from("tasks")
-          .update({ status: TaskStatus.Doing })
-          .eq("id", task.id);
-      }
+      await client
+        .from("tasks")
+        .update({ status: TaskStatus.Doing })
+        .eq("id", task.id);
+
       router.refresh();
     } catch (error) {
       toast({
@@ -51,7 +56,7 @@ export function StartTask({ task }: StartTaskProps) {
       loading={loading}
       setOpen={setOpen}
       onSubmit={onSubmit}
-      tooltip="Iniciar tarefa"
+      tooltip={`${title} tarefa`}
       description="Deseja iniciar essa tarefa?"
     />
   );

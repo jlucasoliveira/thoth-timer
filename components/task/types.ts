@@ -1,6 +1,7 @@
 import { Tables } from "@/database.types";
 
 export enum TaskStatus {
+  Todo = "todo",
   Start = "start",
   Paused = "paused",
   Doing = "doing",

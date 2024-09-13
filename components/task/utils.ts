@@ -8,10 +8,11 @@ import { Option } from "../select";
 import { TaskQuery, TaskStatus } from "./types";
 
 export function translateTaskStatus(status: TaskStatus): string {
-  if (status === TaskStatus.Paused) return "Pausado";
-  if (status === TaskStatus.Done) return "Finalizado";
-  if (status === TaskStatus.Doing) return "Em andamento";
-  return "Iniciado";
+  if (status === TaskStatus.Paused) return "Pausada";
+  if (status === TaskStatus.Done) return "Finalizada";
+  if ([TaskStatus.Doing, TaskStatus.Start].includes(status as TaskStatus))
+    return "Em andamento";
+  return "Planejada";
 }
 
 export function generateStatusOptions(): Option[] {
