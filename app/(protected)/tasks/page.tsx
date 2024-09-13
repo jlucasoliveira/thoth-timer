@@ -30,7 +30,9 @@ export default async function Tasks({ searchParams }: TaskProps) {
   `,
       { count: "exact" },
     )
-    .range(...ranges);
+    .range(...ranges)
+    .order("created_at", { ascending: false })
+    .order("start_at", { ascending: true });
 
   if (!tasks) return;
 

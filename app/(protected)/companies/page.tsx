@@ -14,7 +14,8 @@ export default async function Companies({ searchParams }: CompaniesProps) {
   const { data: companies, count } = await supabase
     .from("companies")
     .select("*", { count: "exact" })
-    .range(...ranges);
+    .range(...ranges)
+    .order("name");
 
   if (!companies) return;
 

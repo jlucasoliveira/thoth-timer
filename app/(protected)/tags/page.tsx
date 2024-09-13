@@ -14,7 +14,8 @@ export default async function Tags({ searchParams }: TagsProps) {
   const { data: tags, count } = await client
     .from("tags")
     .select("*", { count: "exact" })
-    .range(...ranges);
+    .range(...ranges)
+    .order("name");
 
   if (!tags) return;
 

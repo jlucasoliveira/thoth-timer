@@ -7,7 +7,7 @@ async function getProjects(
   client: SupabaseClient<Database, "public">,
   name?: string,
 ) {
-  const query = client.from("projects").select().limit(10);
+  const query = client.from("projects").select().limit(10).order("name");
   if (name) query.ilike("name", `%${name}%`);
   const { data } = await query;
 

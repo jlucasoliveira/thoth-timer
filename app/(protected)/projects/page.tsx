@@ -21,7 +21,8 @@ export default async function Projects({ searchParams }: ProjectsProps) {
   `,
       { count: "exact" },
     )
-    .range(...ranges);
+    .range(...ranges)
+    .order("name");
 
   if (!projects) return;
 
