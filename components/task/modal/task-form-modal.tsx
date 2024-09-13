@@ -142,7 +142,11 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
   ) {
     const { data: task } = await client
       .from("tasks")
-      .insert(payload as TablesInsert<"tasks">)
+      .insert({
+        ...payload,
+        start_at:
+          payload.status !== TaskStatus.Todo ? new Date().toJSON() : undefined,
+      } as TablesInsert<"tasks">)
       .select()
       .single();
 
