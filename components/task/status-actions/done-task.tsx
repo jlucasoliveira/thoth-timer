@@ -21,6 +21,7 @@ export function DoneTask({ task }: DoneTaskProps) {
   async function onSubmit() {
     setLoading(true);
     try {
+      const end_at = new Date().toJSON();
       const { error, data: lastLog } = await client
         .from("task_logs")
         .select()
@@ -31,15 +32,12 @@ export function DoneTask({ task }: DoneTaskProps) {
         .single();
 
       if (!error && lastLog.end_at === null) {
-        await client
-          .from("task_logs")
-          .update({ end_at: new Date().toJSON() })
-          .eq("id", lastLog.id);
+        await client.from("task_logs").update({ end_at }).eq("id", lastLog.id);
       }
 
       await client
         .from("tasks")
-        .update({ status: TaskStatus.Done, end_at: new Date().toJSON() })
+        .update({ status: TaskStatus.Done, end_at })
         .eq("id", task.id);
 
       router.refresh();
