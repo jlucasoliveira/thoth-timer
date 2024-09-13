@@ -14,7 +14,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Thoth Timer",
+  title: "Chrono Timer",
   description: "A simple and small time tracker",
 };
 
@@ -37,7 +37,15 @@ export default function RootLayout({
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Thoth Timer</Link>
+                    <a
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      referrerPolicy="no-referrer"
+                      aria-label="Do you get it?"
+                      href="https://tenor.com/pt-BR/view/do-you-get-it-colin-jost-saturday-night-live-you-understand-get-the-joke-gif-25067672"
+                    >
+                      Chrono Timer
+                    </a>
                   </div>
                   <Menu />
                   <div className="flex flex-row gap-3">

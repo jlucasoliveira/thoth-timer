@@ -1,4 +1,11 @@
 {
   "editor.formatOnSave": true,
-  "cSpell.words": ["hookform", "ilike", "supabase", "tanstack"]
+  "cSpell.words": [
+    "chrono",
+    "Chrono",
+    "hookform",
+    "ilike",
+    "supabase",
+    "tanstack"
+  ]
 }
