@@ -18,7 +18,7 @@ import { extractChangedValues } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/input";
 import { Combobox } from "@/components/combobox";
-import { useCompanies } from "@/components/company/hooks/useCampanies";
+import { useCompanies } from "@/components/company/hooks/getCompanies";
 import { createClient } from "@/utils/supabase/client";
 import { FormType, schema } from "./validation";
 import { parseFormDataIntoPayload } from "./utils";
