@@ -34,9 +34,7 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
           minLength={6}
           required
         />
-        <SubmitButton formAction={signUpAction} pendingText="Cadastrando...">
-          Cadastrar
-        </SubmitButton>
+        <SubmitButton formAction={signUpAction}>Cadastrar</SubmitButton>
         <FormMessage message={searchParams} />
       </div>
     </form>

@@ -33,9 +33,7 @@ export default function Login({ searchParams }: { searchParams: Message }) {
           placeholder="Sua senha"
           required
         />
-        <SubmitButton pendingText="Entrando..." formAction={signInAction}>
-          Entrar
-        </SubmitButton>
+        <SubmitButton formAction={signInAction}>Entrar</SubmitButton>
         <FormMessage message={searchParams} />
       </div>
     </form>
