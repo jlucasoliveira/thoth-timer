@@ -1,9 +1,10 @@
 "use client";
 
+import { Task, TaskStatus } from "../types";
 import { DoneTask } from "./done-task";
 import { PauseTask } from "./pause-task";
 import { StartTask } from "./start-task";
-import { Task, TaskStatus } from "../types";
+import { RestartTask } from "./restart-task";
 
 type StatusActionsProps = {
   task: Task;
@@ -22,6 +23,7 @@ export function StatusActions({ task }: StatusActionsProps) {
 
   if (task.status !== TaskStatus.Done)
     components.push(<DoneTask key="done" task={task} />);
+  else components.push(<RestartTask key="restart" task={task} />);
 
   return components;
 }
