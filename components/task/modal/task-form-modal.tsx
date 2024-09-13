@@ -179,7 +179,7 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
     form.setValue("name", task.name ?? "");
     form.setValue("description", task.description ?? "");
     form.setValue("project", task.project as Tables<"projects">);
-    form.setValue("status", (task.status as TaskStatus) ?? TaskStatus.Start);
+    form.setValue("status", (task.status as TaskStatus) ?? TaskStatus.Todo);
 
     if (task.start_at) {
       const time = extractNaiveTime(task.start_at);

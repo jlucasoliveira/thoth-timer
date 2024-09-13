@@ -1,6 +1,7 @@
 import { User } from "@supabase/supabase-js";
 import { Tables, TablesUpdate } from "@/database.types";
 import { mergeDateHour } from "../utils";
+import { TaskStatus } from "../types";
 import { FormType } from "./validation";
 
 export function parseFormDataIntoPayload(
@@ -11,7 +12,7 @@ export function parseFormDataIntoPayload(
     name: data.name,
     slug: data.slug,
     user_id: user.id,
-    status: data.status,
+    status: data.status ?? TaskStatus.Todo,
     project_id: data.project?.id,
     description: data.description,
     start_at:
