@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { NavigationMenuProps } from "@radix-ui/react-navigation-menu";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -16,7 +17,9 @@ const routes = [
   { route: "/tasks", label: "tarefas" },
 ];
 
-export async function Menu() {
+type MenuProps = Pick<NavigationMenuProps, "orientation">;
+
+export async function Menu({ orientation }: MenuProps) {
   const {
     data: { user },
   } = await createClient().auth.getUser();
@@ -25,12 +28,22 @@ export async function Menu() {
 
   return (
     <NavigationMenu>
-      <NavigationMenuList>
+      <NavigationMenuList
+        className={cn(
+          orientation === "vertical"
+            ? "flex flex-col items-start py-10"
+            : undefined,
+        )}
+      >
         {routes.map(({ label, route }) => (
           <NavigationMenuItem key={route}>
             <Link href={route} legacyBehavior passHref>
               <NavigationMenuLink
-                className={cn(navigationMenuTriggerStyle(), "capitalize")}
+                className={cn(
+                  navigationMenuTriggerStyle(),
+                  "capitalize",
+                  orientation === "vertical" ? "my-2" : undefined,
+                )}
               >
                 {label}
               </NavigationMenuLink>

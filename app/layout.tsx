@@ -2,6 +2,7 @@ import Link from "next/link";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
 import { Menu } from "@/components/menu";
+import { Sheet } from "@/components/sheet";
 import HeaderAuth from "@/components/header-auth";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -35,23 +36,18 @@ export default function RootLayout({
           <main className="min-h-screen flex flex-col">
             <div className="flex-1 w-full flex flex-col gap-10">
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <div className="flex gap-5 items-center font-semibold">
-                    <a
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      referrerPolicy="no-referrer"
-                      aria-label="Do you get it?"
-                      href="https://tenor.com/pt-BR/view/do-you-get-it-colin-jost-saturday-night-live-you-understand-get-the-joke-gif-25067672"
-                    >
-                      Chrono Timer
-                    </a>
+                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm sm:gap-5">
+                  <div className="flex items-center font-bold text-lg">
+                    Chrono Timer
                   </div>
-                  <Menu />
-                  <div className="flex flex-row gap-3">
-                    <HeaderAuth />
-                    <ThemeSwitcher />
+                  <div className="hidden sm:flex sm:flex-1 justify-between">
+                    <Menu />
+                    <div className="flex flex-row gap-3">
+                      <HeaderAuth />
+                      <ThemeSwitcher />
+                    </div>
                   </div>
+                  <Sheet />
                 </div>
               </nav>
               <div className="flex flex-1 flex-col gap-20 p-5">

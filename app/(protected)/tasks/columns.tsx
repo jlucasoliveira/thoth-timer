@@ -38,12 +38,12 @@ export const columns: ColumnDef<TaskWithHour>[] = [
   {
     header: "Titulo",
     cell: ({ row: { original: task } }) => (
-      <div className="flex flex-row gap-0.5">
+      <div className="flex flex-row gap-0.5 text-nowrap">
         {task.tags.map((tag) => (
           <Badge
             key={tag.id}
             variant="outline"
-            className="text-[0.55rem] !py-0"
+            className="text-[0.55rem] !py-0 h-fit"
           >
             {tag.name}
           </Badge>
