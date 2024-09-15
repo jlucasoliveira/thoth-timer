@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/input";
@@ -19,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/textarea";
 import { Combobox } from "@/components/combobox";
 import { DatePicker } from "@/components/date-picker";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { RequirementIndicator } from "@/components/requirement-indicator";
 import { useTags } from "@/components/tags/hooks/getTags";
 import { useProjects } from "@/components/project/hooks/getProjects";
@@ -206,99 +208,101 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
 
   return (
     <Dialog modal open={isOpen || isLoading} onOpenChange={setOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{subtitle} tarefa</DialogTitle>
-        </DialogHeader>
-        <FormProvider {...form}>
-          <div>
-            <Input control={form.control} name="slug" label="Task" required />
-            <Input control={form.control} name="name" label="Titulo" required />
-            <Textarea
-              control={form.control}
-              name="description"
-              label="Descrição"
-            />
-            <Combobox
-              name="project"
-              label="Projeto"
-              options={projects}
-              control={form.control}
-              isLoading={isProjectPending}
-              setSearch={setProjectSearch}
-              placeholder="Selecione um projeto"
-              getOptionLabel={(project) =>
-                project ? (project.name ?? `Projeto ${project.id}`) : ""
-              }
-              getOptionValue={(project) => project?.id?.toString?.() ?? ""}
-            />
-            <div className="flex flex-row gap-2">
-              <Select
-                name="status"
-                label="Status"
+      <DialogOverlay>
+        <DialogContent className="flex flex-col flex-grow !h-5/6">
+          <DialogHeader>
+            <DialogTitle>{subtitle} tarefa</DialogTitle>
+          </DialogHeader>
+          <FormProvider {...form}>
+            <ScrollArea>
+              <Input control={form.control} name="slug" label="Task" required />
+              <Input control={form.control} name="name" label="Titulo" required />
+              <Textarea
                 control={form.control}
-                options={statusOptions}
-                placeholder="Selecione um status"
+                name="description"
+                label="Descrição"
               />
               <Combobox
-                isMulti
-                name="tags"
-                label="Tags"
-                options={tags}
+                name="project"
+                label="Projeto"
+                options={projects}
                 control={form.control}
-                isLoading={isTagPending}
-                setSearch={setTagSearch}
-                placeholder="Selecione pelo menos uma tag"
-                getOptionLabel={(tag) =>
-                  tag ? (tag.name ?? `Tag ${tag.id}`) : ""
+                isLoading={isProjectPending}
+                setSearch={setProjectSearch}
+                placeholder="Selecione um projeto"
+                getOptionLabel={(project) =>
+                  project ? (project.name ?? `Projeto ${project.id}`) : ""
                 }
-                getOptionValue={(tag) => tag?.id?.toString?.() ?? ""}
+                getOptionValue={(project) => project?.id?.toString?.() ?? ""}
               />
-            </div>
-            <div>
-              <span className="text-sm font-medium">
-                Iniciado em <RequirementIndicator />
-              </span>
-              <div className="flex flex-row gap-2 mt-2">
-                <DatePicker
+              <div className="flex sm:flex-row flex-col gap-2">
+                <Select
+                  name="status"
+                  label="Status"
                   control={form.control}
-                  name="startAt"
-                  label="Data"
-                  asChild
+                  options={statusOptions}
+                  placeholder="Selecione um status"
                 />
-                <Input
+                <Combobox
+                  isMulti
+                  name="tags"
+                  label="Tags"
+                  options={tags}
                   control={form.control}
-                  name="startAtTime"
-                  label="Hora"
-                  type="time"
-                  className="min-w-20"
-                  asChild
+                  isLoading={isTagPending}
+                  setSearch={setTagSearch}
+                  placeholder="Selecione pelo menos uma tag"
+                  getOptionLabel={(tag) =>
+                    tag ? (tag.name ?? `Tag ${tag.id}`) : ""
+                  }
+                  getOptionValue={(tag) => tag?.id?.toString?.() ?? ""}
                 />
               </div>
-            </div>
-            <EndAtInput form={form} />
-          </div>
-        </FormProvider>
-        <DialogFooter>
-          <Button
-            className="flex flex-row gap-2"
-            onClick={form.handleSubmit(onSubmit)}
-            disabled={isLoading}
-          >
-            Salvar
-            {isLoading ? (
-              <LoaderCircle className="animate-spin" size={18} />
-            ) : null}
-          </Button>
-          <Button
-            variant="ghost"
-            disabled={isLoading}
-            onClick={() => setOpen(false)}
-          >
-            Cancelar
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+              <div className="flex flex-grow flex-col">
+                <span className="text-sm font-medium">
+                  Iniciado em <RequirementIndicator />
+                </span>
+                <div className="flex flex-row gap-2 mt-2">
+                  <DatePicker
+                    control={form.control}
+                    name="startAt"
+                    label="Data"
+                    asChild
+                  />
+                  <Input
+                    control={form.control}
+                    name="startAtTime"
+                    label="Hora"
+                    type="time"
+                    className="min-w-20"
+                    asChild
+                  />
+                </div>
+              </div>
+              <EndAtInput form={form} />
+            </ScrollArea>
+          </FormProvider>
+          <DialogFooter>
+            <Button
+              className="flex flex-row gap-2"
+              onClick={form.handleSubmit(onSubmit)}
+              disabled={isLoading}
+            >
+              Salvar
+              {isLoading ? (
+                <LoaderCircle className="animate-spin" size={18} />
+              ) : null}
+            </Button>
+            <Button
+              variant="ghost"
+              disabled={isLoading}
+              onClick={() => setOpen(false)}
+            >
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </DialogOverlay>
     </Dialog>
   );
 }
