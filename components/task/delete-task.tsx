@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { LoaderCircle, Trash } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { Trash } from "lucide-react";
 import { Tables } from "@/database.types";
 import {
   Tooltip,
@@ -12,56 +8,34 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { SubmitButton } from "../submit-button";
+import { deleteTask } from "./status-actions/actions";
 
 type DeleteTaskProps = {
   task: Tables<"tasks">;
 };
 
 export function DeleteTask({ task }: DeleteTaskProps) {
-  const router = useRouter();
-  const client = createClient();
-  const [loading, setLoading] = useState<boolean>(false);
-
-  async function onDelete() {
-    try {
-      setLoading(true);
-      await client.from("tasks").delete().eq("id", task.id);
-      router.refresh();
-      toast({
-        title: `Tarefa "${task.name}" removida com sucesso!`,
-        onOpenChange: (open) => {
-          if (!open) setLoading(false);
-          return open;
-        },
-      });
-    } catch (error) {
-      toast({
-        title: "Ocorreu um erro ao excluir a empresa",
-        variant: "destructive",
-      });
-    }
-  }
+  const action = deleteTask.bind(null, task);
 
   return (
-    <div role="button">
-      {loading ? (
-        <LoaderCircle className="animate-spin" size="18" />
-      ) : (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Trash
-                size="18"
-                className="cursor-pointer"
-                onClick={() => onDelete()}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Remover tarefa</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild type="submit">
+          <SubmitButton
+            size="icon"
+            variant="outline"
+            formAction={action}
+            className="!w-fit !h-fit p-0 border-0"
+            overrideContentOnLoading
+          >
+            <Trash size="18" className="cursor-pointer" />
+          </SubmitButton>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Remover tarefa</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

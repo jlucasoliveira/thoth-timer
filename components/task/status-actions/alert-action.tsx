@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useTransition } from "react";
 import { LoaderCircle, LucideProps } from "lucide-react";
+import { Message } from "@/components/form-message";
 import {
   Tooltip,
   TooltipContent,
@@ -10,7 +11,6 @@ import {
 } from "@/components/ui/tooltip";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -19,13 +19,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { SubmitButton } from "@/components/submit-button";
 
 type AlertActionProps = {
   open?: boolean;
   tooltip: string;
-  loading?: boolean;
   description: string;
-  onSubmit: () => Promise<void>;
+  action: (formData?: FormData) => Promise<void | Message>;
   setOpen: (value: boolean) => void;
   form?: React.ReactNode;
   Icon: React.ForwardRefExoticComponent<
@@ -37,19 +37,26 @@ export function AlertAction({
   open,
   Icon,
   form,
+  action,
   setOpen,
   tooltip,
-  loading,
-  onSubmit,
   description,
 }: AlertActionProps) {
+  const [pending, startTransition] = useTransition();
+
+  function formAction(formData?: FormData) {
+    startTransition(() => {
+      action(formData);
+    });
+  }
+
   return (
-    <AlertDialog open={open || loading} onOpenChange={setOpen}>
+    <AlertDialog open={open || pending} onOpenChange={setOpen}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <AlertDialogTrigger asChild disabled={loading}>
-              {loading ? (
+            <AlertDialogTrigger asChild disabled={pending}>
+              {pending ? (
                 <LoaderCircle className="animate-spin" size={18} />
               ) : (
                 <Icon className="cursor-pointer" size={18} />
@@ -66,14 +73,13 @@ export function AlertAction({
           <AlertDialogTitle>Continuar?</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        {form}
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
-          <AlertDialogAction disabled={loading} onClick={onSubmit}>
-            Continuar{" "}
-            {loading ? <LoaderCircle className="animate-spin" /> : null}
-          </AlertDialogAction>
-        </AlertDialogFooter>
+        <form>
+          {form}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={pending}>Cancelar</AlertDialogCancel>
+            <SubmitButton formAction={formAction}>Continuar</SubmitButton>
+          </AlertDialogFooter>
+        </form>
       </AlertDialogContent>
     </AlertDialog>
   );
