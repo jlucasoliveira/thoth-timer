@@ -11,7 +11,7 @@ import {
 import { DeleteTask } from "@/components/task/delete-task";
 import { TaskStatus, TaskWithHour } from "@/components/task/types";
 import { EditTaskModal } from "@/components/task/modal/edit-task-modal";
-import { StatusActions } from "@/components/task/status-actions/actions";
+import { StatusActions } from "@/components/task/status-actions/status-actions";
 
 function Timer(task: TaskWithHour) {
   const [hour, setHour] = useState<string>(formatHour(calculateHours(task)));
@@ -64,11 +64,11 @@ export const columns: ColumnDef<TaskWithHour>[] = [
   {
     header: "Ações",
     cell: ({ row: { original: task } }) => (
-      <div className="flex flex-row gap-1">
+      <form role="toolbar" className="flex flex-row gap-1">
         <StatusActions task={task as any} />
         <EditTaskModal key={task.id} task={task as any} />
         <DeleteTask task={task as any} />
-      </div>
+      </form>
     ),
   },
 ];
