@@ -6,10 +6,15 @@ import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+type Props = ComponentProps<typeof Button> & {
+  overrideContentOnLoading?: boolean;
+};
+
 export function SubmitButton({
   children,
+  overrideContentOnLoading,
   ...props
-}: ComponentProps<typeof Button>) {
+}: Props) {
   const { pending } = useFormStatus();
 
   return (
@@ -20,7 +25,7 @@ export function SubmitButton({
       {...props}
       className={cn("flex flex-row gap-2", props.className)}
     >
-      {children}
+      {overrideContentOnLoading && pending ? null : children}
       {pending ? <LoaderCircle size={18} className="animate-spin" /> : null}
     </Button>
   );
