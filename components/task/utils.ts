@@ -29,6 +29,7 @@ export function extractNaiveTime(naiveDate: string | number | Date): string {
 }
 
 export function calculateHours(row: TaskQuery): number {
+  if (!row.start_at) return 0;
   const pausedTime = row.spend_time
     .sort(
       (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
