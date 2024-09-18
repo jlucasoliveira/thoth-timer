@@ -1,7 +1,6 @@
 "use client";
 
 import { Trash } from "lucide-react";
-import { Tables } from "@/database.types";
 import {
   Tooltip,
   TooltipContent,
@@ -10,9 +9,10 @@ import {
 } from "@/components/ui/tooltip";
 import { SubmitButton } from "../submit-button";
 import { deleteTask } from "./status-actions/actions";
+import { Task } from "./types";
 
 type DeleteTaskProps = {
-  task: Tables<"tasks">;
+  task: Pick<Task, 'id' | 'name'>;
 };
 
 export function DeleteTask({ task }: DeleteTaskProps) {

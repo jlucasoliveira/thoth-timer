@@ -7,7 +7,7 @@ import { AlertAction } from "./alert-action";
 import { startTask } from "./actions";
 
 type StartTaskProps = {
-  task: Task;
+  task: Pick<Task, "id" | "status">;
 };
 
 export function StartTask({ task }: StartTaskProps) {

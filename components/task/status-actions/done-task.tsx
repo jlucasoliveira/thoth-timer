@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Square } from "lucide-react";
-import { Task } from  "../types";
+import { Task } from "../types";
 import { doneTask } from "./actions";
 import { AlertAction } from "./alert-action";
 
 type DoneTaskProps = {
-  task: Task;
+  task: Pick<Task, "id" | "status">;
 };
 
 export function DoneTask({ task }: DoneTaskProps) {

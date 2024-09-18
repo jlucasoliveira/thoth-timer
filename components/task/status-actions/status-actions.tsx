@@ -1,13 +1,13 @@
 "use client";
 
-import { Task, TaskStatus } from "../types";
+import { TaskStatus, TaskWithHour } from "../types";
 import { DoneTask } from "./done-task";
 import { PauseTask } from "./pause-task";
 import { StartTask } from "./start-task";
 import { RestartTask } from "./restart-task";
 
 type StatusActionsProps = {
-  task: Task;
+  task: TaskWithHour;
 };
 
 export function StatusActions({ task }: StatusActionsProps) {

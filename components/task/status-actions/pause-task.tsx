@@ -21,7 +21,7 @@ const defaultValues: FormType = {
 };
 
 type PauseTaskProps = {
-  task: Task;
+  task: Pick<Task, "id" | "status">;
 };
 
 export function PauseTask({ task }: PauseTaskProps) {
