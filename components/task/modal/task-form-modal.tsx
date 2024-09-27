@@ -214,8 +214,8 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
   return (
     <Dialog modal open={isOpen || isLoading} onOpenChange={handleOpen}>
       <DialogOverlay>
-        <DialogContent className="flex flex-col flex-grow !h-5/6 px-0">
-          <DialogHeader>
+        <DialogContent className="flex flex-col flex-grow !h-5/6 md:!h-fit px-0">
+          <DialogHeader className="px-6">
             <DialogTitle>{subtitle} tarefa</DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto px-6">
