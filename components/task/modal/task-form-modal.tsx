@@ -109,6 +109,11 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
     defaultValues,
   });
 
+  function handleOpen(open: boolean = false) {
+    if (!open) form.reset();
+    setOpen(open);
+  }
+
   async function handleUpdate(
     payload: TablesUpdate<"tasks">,
     tags: Tables<"tags">[] | null,
@@ -207,16 +212,21 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
   }, [task]);
 
   return (
-    <Dialog modal open={isOpen || isLoading} onOpenChange={setOpen}>
+    <Dialog modal open={isOpen || isLoading} onOpenChange={handleOpen}>
       <DialogOverlay>
-        <DialogContent className="flex flex-col flex-grow !h-5/6">
+        <DialogContent className="flex flex-col flex-grow !h-5/6 px-0">
           <DialogHeader>
             <DialogTitle>{subtitle} tarefa</DialogTitle>
           </DialogHeader>
-          <FormProvider {...form}>
-            <ScrollArea>
+          <div className="overflow-y-auto px-6">
+            <FormProvider {...form}>
               <Input control={form.control} name="slug" label="Task" required />
-              <Input control={form.control} name="name" label="Titulo" required />
+              <Input
+                control={form.control}
+                name="name"
+                label="Titulo"
+                required
+              />
               <Textarea
                 control={form.control}
                 name="description"
@@ -280,9 +290,9 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
                 </div>
               </div>
               <EndAtInput form={form} />
-            </ScrollArea>
-          </FormProvider>
-          <DialogFooter>
+            </FormProvider>
+          </div>
+          <DialogFooter className="px-6">
             <Button
               className="flex flex-row gap-2"
               onClick={form.handleSubmit(onSubmit)}
@@ -293,11 +303,7 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
                 <LoaderCircle className="animate-spin" size={18} />
               ) : null}
             </Button>
-            <Button
-              variant="ghost"
-              disabled={isLoading}
-              onClick={() => setOpen(false)}
-            >
+            <Button variant="ghost" disabled={isLoading} onClick={() => handleOpen()}>
               Cancelar
             </Button>
           </DialogFooter>
