@@ -3,8 +3,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { Database } from "@/database.types";
 
 const isProtectRoute = (pathname: string): boolean => {
-  return /^\/companies|projects|reset-password|tasks/g.test(pathname);
-}
+  return /^\/companies|projects|reset-password|tasks|tags/g.test(pathname);
+};
 
 export const updateSession = async (request: NextRequest) => {
   // This `try/catch` block is only here for the interactive tutorial.
