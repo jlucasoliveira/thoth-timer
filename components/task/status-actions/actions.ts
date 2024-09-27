@@ -65,6 +65,7 @@ export async function pauseTask(task: Params, formData?: FormData) {
       user_id: user!.id,
       description: data?.description,
     });
+
     revalidatePath("/tasks");
   } catch (error) {
     return encodedRedirectTyped(

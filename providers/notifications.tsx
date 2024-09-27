@@ -17,7 +17,7 @@ export function Notifications() {
     if (type && message && digest && digest !== currentDigest) {
       localStorage.setItem(storageKey, digest);
       toast({
-        title: message,
+        title: decodeURIComponent(message),
         variant: type === "error" ? "destructive" : "default",
       });
     }
