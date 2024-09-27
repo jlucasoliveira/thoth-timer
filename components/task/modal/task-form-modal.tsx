@@ -29,7 +29,7 @@ import { extractChangedValues } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
 import { Tables, TablesInsert, TablesUpdate } from "@/database.types";
 import { extractNaiveTime, generateStatusOptions } from "../utils";
-import { Task, TaskStatus } from "../types";
+import { TaskStatus, TaskWithHour } from "../types";
 import { extractTagsDiffs, parseFormDataIntoPayload } from "./utils";
 import { FormType, schema, defaultValues } from "./validation";
 
@@ -80,7 +80,7 @@ const statusOptions = generateStatusOptions();
 type TaskFormModalProps = {
   isOpen: boolean;
   setOpen: (value: boolean) => void;
-  task?: Task;
+  task?: TaskWithHour;
 };
 
 export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
@@ -180,7 +180,7 @@ export function TaskFormModal({ isOpen, setOpen, task }: TaskFormModalProps) {
     setLoading(false);
   }
 
-  function setupFormData(task: Task) {
+  function setupFormData(task: TaskWithHour) {
     form.setValue("slug", task.slug ?? "");
     form.setValue("name", task.name ?? "");
     form.setValue("description", task.description ?? "");

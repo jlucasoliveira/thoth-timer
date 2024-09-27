@@ -19,6 +19,7 @@ export default async function Tasks({ searchParams }: TaskProps) {
       `
     id,
     name,
+    description,
     status,
     slug,
     start_at,

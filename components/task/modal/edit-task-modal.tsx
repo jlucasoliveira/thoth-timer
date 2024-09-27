@@ -8,11 +8,11 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { TaskWithHour } from "../types";
 import { TaskFormModal } from "./task-form-modal";
-import { Task } from "../types";
 
 type EditTaskModalProps = {
-  task: Task;
+  task: TaskWithHour;
 };
 
 export function EditTaskModal({ task }: EditTaskModalProps) {

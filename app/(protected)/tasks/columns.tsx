@@ -65,9 +65,9 @@ export const columns: ColumnDef<TaskWithHour>[] = [
     header: "Ações",
     cell: ({ row: { original: task } }) => (
       <form role="toolbar" className="flex flex-row gap-1">
-        <StatusActions task={task as any} />
-        <EditTaskModal key={task.id} task={task as any} />
-        <DeleteTask task={task as any} />
+        <StatusActions task={task} />
+        <EditTaskModal key={task.id} task={task} />
+        <DeleteTask task={task} />
       </form>
     ),
   },
