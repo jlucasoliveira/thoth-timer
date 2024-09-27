@@ -15,10 +15,10 @@ export const columns: ColumnDef<Tables<"companies">>[] = [
   {
     header: "Ações",
     cell: ({ row: { original: company } }) => (
-      <div className="flex flex-row gap-1">
+      <form role="toolbar" className="flex flex-row gap-1">
         <EditCompanyModal key={company.id} company={company} />
         <DeleteCompany company={company} />
-      </div>
+      </form>
     ),
   },
 ];
