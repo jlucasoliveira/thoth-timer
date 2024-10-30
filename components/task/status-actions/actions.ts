@@ -92,7 +92,7 @@ export async function doneTask(task: Params) {
       .limit(1)
       .single();
 
-    if (!error && lastLog.end_at === null) {
+    if (!error && !lastLog?.end_at) {
       await client.from("task_logs").update({ end_at }).eq("id", lastLog.id);
     }
 
