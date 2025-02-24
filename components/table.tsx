@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   getCoreRowModel,
   useReactTable,
+  TableOptions,
 } from "@tanstack/react-table";
 import {
   Table as TableUI,
@@ -20,14 +21,10 @@ import { Pagination } from "@/components/pagination";
 
 type TableProps<T> = {
   data: T[];
-  title?: string;
   columns: ColumnDef<T>[];
-  enableRowSelection?: boolean;
-  onRowSelectionChange?: (row: T) => void;
   debug?: boolean;
   pages: number;
-  filtersContext?: string;
-  forceScroll?: boolean;
+  tableProps?: Pick<TableOptions<T>, "data" | "columns" | "debugTable">;
 };
 
 export function Table<T>(props: TableProps<T>) {
@@ -42,11 +39,12 @@ export function Table<T>(props: TableProps<T>) {
     enableSortingRemoval: true,
     enableMultiSort: true,
     debugTable: props.debug,
+    ...props.tableProps,
   });
 
   return (
     <>
-      <div className="flex flex-grow">
+      <div className="flex flex-grow mt-3">
         <TableUI>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

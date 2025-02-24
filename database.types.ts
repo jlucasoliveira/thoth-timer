@@ -31,15 +31,7 @@ export type Database = {
           price_by_hour?: number | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "companies_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       projects: {
         Row: {
@@ -71,13 +63,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "projects_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       tags: {
@@ -99,15 +84,7 @@ export type Database = {
           name?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "tags_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       tags_tasks: {
         Row: {
@@ -126,14 +103,14 @@ export type Database = {
           {
             foreignKeyName: "tags_tasks_tag_id_fkey"
             columns: ["tag_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "tags"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tags_tasks_task_id_fkey"
             columns: ["task_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
@@ -175,13 +152,6 @@ export type Database = {
             referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "task_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       tasks: {
@@ -193,8 +163,9 @@ export type Database = {
           name: string
           project_id: number | null
           slug: string | null
-          start_at: string
+          start_at: string | null
           status: string | null
+          time_taken: string | null
           user_id: string | null
         }
         Insert: {
@@ -205,8 +176,9 @@ export type Database = {
           name: string
           project_id?: number | null
           slug?: string | null
-          start_at?: string
+          start_at?: string | null
           status?: string | null
+          time_taken?: string | null
           user_id?: string | null
         }
         Update: {
@@ -217,8 +189,9 @@ export type Database = {
           name?: string
           project_id?: number | null
           slug?: string | null
-          start_at?: string
+          start_at?: string | null
           status?: string | null
+          time_taken?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -229,18 +202,25 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "tasks_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      task_logs_sum: {
+        Row: {
+          task_id: number | null
+          total: unknown | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_logs_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
@@ -334,4 +314,19 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

@@ -28,6 +28,7 @@ export async function Sheet() {
         <Button asChild size="sm" variant="default" className="flex-grow">
           <Link href="/sign-up">Cadastrar</Link>
         </Button>
+        <ThemeSwitcher />
       </div>
     );
 
