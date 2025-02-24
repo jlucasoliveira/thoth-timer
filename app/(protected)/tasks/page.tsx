@@ -26,7 +26,7 @@ export default async function Tasks({ searchParams }: TaskProps) {
     end_at,
     created_at,
     spend_time: task_logs (start_at, end_at),
-    project: projects (id, name),
+    project: projects (id, name, company: companies (price_by_hour)),
     tags (id, name)
   `,
       { count: "exact" },

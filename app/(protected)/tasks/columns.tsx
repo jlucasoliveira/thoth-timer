@@ -11,6 +11,7 @@ import {
 import { DeleteTask } from "@/components/task/delete-task";
 import { TaskStatus, TaskWithHour } from "@/components/task/types";
 import { EditTaskModal } from "@/components/task/modal/edit-task-modal";
+import { ArchiveTask } from "@/components/task/status-actions/archive-task";
 import { StatusActions } from "@/components/task/status-actions/status-actions";
 
 function Timer(task: TaskWithHour) {
@@ -68,6 +69,7 @@ export const columns: ColumnDef<TaskWithHour>[] = [
         <StatusActions task={task} />
         <EditTaskModal key={task.id} task={task} />
         <DeleteTask task={task} />
+        <ArchiveTask task={task} />
       </form>
     ),
   },

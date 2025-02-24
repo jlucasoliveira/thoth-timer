@@ -6,6 +6,7 @@ export enum TaskStatus {
   Paused = "paused",
   Doing = "doing",
   Done = "done",
+  Archived = "archived",
 }
 
 export type Task = Tables<"tasks"> & {

@@ -153,6 +153,45 @@ export async function restartTask(task: Pick<Task, "id" | "end_at">) {
   }
 }
 
+export async function archiveTask(task: Pick<Task, "id" | "end_at">) {
+  const requestId = randomUUID();
+  try {
+    const client = createClient();
+
+    if (!task.end_at) {
+      const { data: lastLog } = await client
+        .from("task_logs")
+        .select()
+        .eq("task_id", task.id)
+        .order("start_at", { ascending: false, nullsFirst: true })
+        .order("end_at", { ascending: false, nullsFirst: true })
+        .limit(1)
+        .single();
+
+      if (lastLog && !lastLog.end_at) {
+        await client
+          .from("task_logs")
+          .update({ end_at: new Date().toJSON() })
+          .eq("id", lastLog.id);
+      }
+    }
+
+    await client
+      .from("tasks")
+      .update({ status: TaskStatus.Archived, end_at: task.end_at ?? null })
+      .eq("id", task.id);
+
+    revalidatePath("/tasks");
+  } catch (error) {
+    return encodedRedirectTyped(
+      "error",
+      "/tasks",
+      "Não foi possível arquivar a tarefa.",
+      new URLSearchParams([["digest", requestId]]),
+    );
+  }
+}
+
 export async function deleteTask(task: Pick<Task, "id" | "name">) {
   const requestId = randomUUID();
   try {
