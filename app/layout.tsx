@@ -1,6 +1,8 @@
-import Link from "next/link";
+
+
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Menu } from "@/components/menu";
 import { Sheet } from "@/components/sheet";
 import HeaderAuth from "@/components/header-auth";
@@ -42,7 +44,7 @@ export default function RootLayout({
                   </div>
                   <div className="hidden sm:flex sm:flex-1 justify-between">
                     <Menu />
-                    <div className="flex flex-row gap-3">
+                    <div className="md:hidden flex flex-row gap-3">
                       <HeaderAuth />
                       <ThemeSwitcher />
                     </div>
@@ -53,7 +55,7 @@ export default function RootLayout({
               <div className="flex flex-1 flex-col gap-20 p-5">
                 <Provider>{children}</Provider>
               </div>
-
+              <SpeedInsights />
               <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">
                 <p>
                   Powered by{" "}
