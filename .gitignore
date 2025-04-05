@@ -35,3 +35,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+db_cluster-23-11-2024@14-17-13.backup.gz
+.open-next
